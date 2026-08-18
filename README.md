@@ -1,4 +1,4 @@
-# authenapp
+# WardConnect
 
 A new Flutter project.
 
