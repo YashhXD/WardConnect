@@ -12,6 +12,10 @@
 .swiftpm/
 migrate_working_dir/
 
+# IDE and assistant configurations
+.vscode/
+.claude/
+
 # IntelliJ related
 *.iml
 *.ipr
