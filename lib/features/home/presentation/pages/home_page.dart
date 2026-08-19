@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-
-// --- Color Constants ---
-const Color kPrimaryTeal = Color(0xFF006B70);
-const Color kLightTeal = Color(0xFFE2F4F4);
-const Color kScaffoldBg = Color(0xFFF7F9FA);
+import 'package:authenapp/features/auth/presentation/screens/colors.dart';
+import 'package:authenapp/features/auth/presentation/screens/citizen_support_screen.dart';
+import 'package:authenapp/features/auth/presentation/screens/educational_services_screen.dart';
+import 'package:authenapp/features/auth/presentation/screens/apply_for_services_screen.dart';
+import 'package:authenapp/features/auth/presentation/screens/legal_portal_screen.dart';
+import 'package:authenapp/features/auth/presentation/screens/training_modules_screen.dart';
+import 'package:authenapp/features/auth/presentation/screens/complaints_queries_screen.dart';
+import 'package:authenapp/features/auth/presentation/screens/service_status_screen.dart';
 
 void main() {
   runApp(const HomePage());
@@ -26,15 +29,17 @@ class HomePage extends StatelessWidget {
 }
 
 // --- Service Item Model ---
+// `builder` returns a fresh instance of the destination widget when tapped,
+// so each service links to its own independently defined screen file.
 class ServiceItem {
   final String title;
   final IconData icon;
-  final Widget destination;
+  final WidgetBuilder builder;
 
   ServiceItem({
     required this.title,
     required this.icon,
-    required this.destination,
+    required this.builder,
   });
 }
 
@@ -43,37 +48,36 @@ class ServiceHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // List of Services with target destination pages
     final List<ServiceItem> services = [
       ServiceItem(
         title: 'Citizen Support',
         icon: Icons.people_alt_outlined,
-        destination: const DetailScreen(title: 'Citizen Support'),
+        builder: (context) => const CitizenSupportScreen(),
       ),
       ServiceItem(
         title: 'Educational\nServices',
         icon: Icons.menu_book_outlined,
-        destination: const DetailScreen(title: 'Educational Services'),
+        builder: (context) => const EducationalServicesScreen(),
       ),
       ServiceItem(
         title: 'Apply for\nServices',
         icon: Icons.edit_note_outlined,
-        destination: const DetailScreen(title: 'Apply for Services'),
+        builder: (context) => const ApplyForServicesScreen(),
       ),
       ServiceItem(
         title: 'Legal Portal',
         icon: Icons.balance_outlined,
-        destination: const DetailScreen(title: 'Legal Portal'),
+        builder: (context) => const LegalPortalScreen(),
       ),
       ServiceItem(
         title: 'Training Modules',
         icon: Icons.school_outlined,
-        destination: const DetailScreen(title: 'Training Modules'),
+        builder: (context) => const TrainingModulesScreen(),
       ),
       ServiceItem(
         title: 'Complaints &\nQueries',
         icon: Icons.gavel_outlined,
-        destination: const DetailScreen(title: 'Complaints & Queries'),
+        builder: (context) => const ComplaintsQueriesScreen(),
       ),
     ];
 
@@ -105,8 +109,6 @@ class ServiceHomeScreen extends StatelessWidget {
               const SizedBox(height: 12),
 
               // 6. Carousel Indicator Dots
-              _buildPageIndicator(),
-              const SizedBox(height: 16),
             ],
           ),
         ),
@@ -121,11 +123,7 @@ class ServiceHomeScreen extends StatelessWidget {
       children: [
         const CircleAvatar(
           radius: 24,
-          backgroundColor: Color(0xFFF3D063),
-          child: CircleAvatar(
-            radius: 22,
-            backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=12'),
-          ),
+          backgroundImage: AssetImage("lib/assets/user.jpg"),
         ),
         const SizedBox(width: 12),
         const Expanded(
@@ -133,16 +131,12 @@ class ServiceHomeScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Profile Name',
+                'Yash Mehta',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
                 ),
-              ),
-              Text(
-                'ID: 123456789',
-                style: TextStyle(fontSize: 13, color: Colors.black54),
               ),
             ],
           ),
@@ -179,10 +173,11 @@ class ServiceHomeScreen extends StatelessWidget {
   Widget _buildServiceStatusCard(BuildContext context) {
     return InkWell(
       onTap: () {
+        // Navigates to the independently defined ServiceStatusScreen file.
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const DetailScreen(title: 'Service Status Details'),
+            builder: (context) => const ServiceStatusScreen(),
           ),
         );
       },
@@ -279,9 +274,11 @@ class ServiceHomeScreen extends StatelessWidget {
               final item = services[index];
               return InkWell(
                 onTap: () {
+                  // Navigates to the independently defined screen file
+                  // supplied by this service's `builder`.
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => item.destination),
+                    MaterialPageRoute(builder: item.builder),
                   );
                 },
                 borderRadius: BorderRadius.circular(12),
@@ -359,63 +356,6 @@ class ServiceHomeScreen extends StatelessWidget {
           ),
           Icon(Icons.groups_outlined, size: 55, color: Colors.white70),
         ],
-      ),
-    );
-  }
-
-  Widget _buildPageIndicator() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          width: 8,
-          height: 8,
-          decoration: const BoxDecoration(
-            color: kPrimaryTeal,
-            shape: BoxShape.circle,
-          ),
-        ),
-        const SizedBox(width: 5),
-        Container(
-          width: 20,
-          height: 7,
-          decoration: BoxDecoration(
-            color: Colors.grey.shade300,
-            borderRadius: BorderRadius.circular(4),
-          ),
-        ),
-        const SizedBox(width: 5),
-        Container(
-          width: 8,
-          height: 8,
-          decoration: BoxDecoration(
-            color: Colors.grey.shade300,
-            shape: BoxShape.circle,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-// --- Generic Detail Page for Demonstration ---
-class DetailScreen extends StatelessWidget {
-  final String title;
-  const DetailScreen({super.key, required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-        backgroundColor: kPrimaryTeal,
-        foregroundColor: Colors.white,
-      ),
-      body: Center(
-        child: Text(
-          '$title Page',
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-        ),
       ),
     );
   }
