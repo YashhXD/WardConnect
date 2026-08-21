@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: lightmode,
-        darkTheme: darkMode,
+        // darkTheme: darkMode,
         home: BlocConsumer<AuthCubit, AuthState>(builder: (context,state){
           print(state);
           if(state is Unauthenticated){

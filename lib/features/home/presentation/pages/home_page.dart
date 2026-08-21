@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart'; // Required for context.read<AuthCubit>()
+import 'package:authenapp/features/auth/presentation/cubits/auth_cubit.dart'; // Adjust path if needed
 import 'package:authenapp/features/auth/presentation/screens/colors.dart';
 import 'package:authenapp/features/auth/presentation/screens/citizen_support_screen.dart';
 import 'package:authenapp/features/auth/presentation/screens/educational_services_screen.dart';
@@ -29,8 +31,6 @@ class HomePage extends StatelessWidget {
 }
 
 // --- Service Item Model ---
-// `builder` returns a fresh instance of the destination widget when tapped,
-// so each service links to its own independently defined screen file.
 class ServiceItem {
   final String title;
   final IconData icon;
@@ -88,8 +88,8 @@ class ServiceHomeScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // 1. Profile Header
-              _buildProfileHeader(),
+              // 1. Profile Header (context passed)
+              _buildProfileHeader(context),
               const SizedBox(height: 16),
 
               // 2. Search Bar
@@ -107,8 +107,6 @@ class ServiceHomeScreen extends StatelessWidget {
               // 5. Bottom Banner
               _buildBottomBanner(),
               const SizedBox(height: 12),
-
-              // 6. Carousel Indicator Dots
             ],
           ),
         ),
@@ -118,7 +116,7 @@ class ServiceHomeScreen extends StatelessWidget {
 
   // --- Sub-Widgets ---
 
-  Widget _buildProfileHeader() {
+  Widget _buildProfileHeader(BuildContext context) {
     return Row(
       children: [
         const CircleAvatar(
@@ -149,6 +147,14 @@ class ServiceHomeScreen extends StatelessWidget {
           onPressed: () {},
           icon: const Icon(Icons.tune_outlined, size: 24),
         ),
+        // Logout Button
+        IconButton(
+          onPressed: () {
+            final authCubit = context.read<AuthCubit>();
+            authCubit.logout();
+          },
+          icon: const Icon(Icons.logout, size: 24, color: Colors.redAccent),
+        ),
       ],
     );
   }
@@ -173,7 +179,6 @@ class ServiceHomeScreen extends StatelessWidget {
   Widget _buildServiceStatusCard(BuildContext context) {
     return InkWell(
       onTap: () {
-        // Navigates to the independently defined ServiceStatusScreen file.
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -274,8 +279,6 @@ class ServiceHomeScreen extends StatelessWidget {
               final item = services[index];
               return InkWell(
                 onTap: () {
-                  // Navigates to the independently defined screen file
-                  // supplied by this service's `builder`.
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: item.builder),
@@ -284,7 +287,6 @@ class ServiceHomeScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 child: Column(
                   children: [
-                    // Circular Icon Button
                     Container(
                       width: 68,
                       height: 68,
@@ -295,7 +297,6 @@ class ServiceHomeScreen extends StatelessWidget {
                       child: Icon(item.icon, color: kPrimaryTeal, size: 30),
                     ),
                     const SizedBox(height: 8),
-                    // Title
                     Expanded(
                       child: Text(
                         item.title,
